@@ -8,7 +8,7 @@
     </style>
 
 <div>
-    <form>
+    <form onsubmit="return false">
         <label>
             UserID:
             <input type="text" id ="uid" name="uid" required minlength="8" required maxlength="12">
@@ -28,14 +28,28 @@
             Birthday:
             <input type="date" id="birthday" name="birthday" placeholder="mm/dd/yyyy">
         </label>
-        <button onclick ="verifyUserID()">Accept</button>
+        <button onclick="validate()">Accept</button>
     </form>
 </div>
 
 <script>
-    function verifyUserID(){
-        const uid = document.getElementById("uid").value
-    }
+        //const fname = document.getElementById("fname").value
+        //const lname = document.getElementById("lname").value
+        //const birthday = document.getElementById("birthday").value
+
+        function validate() {
+            
+            verifyUserID()
+            
+        }
+
+        function verifyUserID() {
+            const uid = document.getElementById("uid").value.trim()
+            
+            for(let x of uid) {
+                console.log(x)
+            }
+        };
     
     // and validate inputs here using if statements
     // and document.getElementById().innerHTML to display results
