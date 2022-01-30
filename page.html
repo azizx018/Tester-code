@@ -4,7 +4,7 @@
     <title>Chiara's Project</title>
     <style>
         body {
-            background-color:rgb(136, 206, 230);
+            background-color:rgb(100, 211, 248);
             padding: 10px;
         }
         label {
@@ -14,12 +14,17 @@
         }
         input {
             display: block;
-            width: 200px;
+            width: 180px;
         }
         button {
-            background-color:rgb(244, 193, 29);
+            background-color:rgb(247, 221, 135);
             padding: 8px; 
             border-radius:5px;
+            border:midnightblue, thin;
+        }
+        h5 {
+            color:red;
+            display: inline;
         }
     </style>
 </head>
@@ -30,21 +35,25 @@
         <label>
             UserID:
             <input type="text" id ="uid" name="uid" required minlength="8" maxlength="12">
+            <h5 id="invalid-userid"></h5>
         </label>
         
         <label>
             First Name:
-            <input type="text" id= "fname" name="fname" required>
+            <input type="text" id= "fname" name="fname">
+            <h5 id="missing-fname"></h5>
         </label>
         
         <label>
             Last Name:
-            <input type="text" id="lname" name="lname" required>
+            <input type="text" id="lname" name="lname">
+            <h5 id="missing-lname"></h5>
         </label>
         
         <label>
             Birthday:
-            <input type="date" id="birthday" name="birthday" placeholder="mm/dd/yyyy" required>
+            <input type="date" id="birthday" name="birthday" placeholder="mm/dd/yyyy">
+            <h5 id="missing-birthday"></h5>
         </label>
         <button>Accept</button>
     </form>
@@ -61,6 +70,7 @@
        
     let _daysAlive = 0
     const ageDiv = document.getElementById("age")
+    
 
     function validate(event) {
         event.preventDefault()
@@ -68,6 +78,7 @@
         verifyUserID()
         _daysAlive = dateDiff()
         printResults()
+        verifyInfo()
     }
 
     function verifyUserID() {
@@ -88,7 +99,22 @@
             }
         }
         if (hasNumber === false || hasLowerCase === false || hasUpperCase === false){
-            alert("Invalid UserID! You must use an Uppercase, lowercase and a number for your UserID")
+            document.getElementById("invalid-userid").innerHTML = "Invalid UserID!"
+        }
+        
+    }
+    function verifyInfo() {
+        const fname = document.getElementById("fname").value
+        const lname = document.getElementById("lname").value
+        const birthday = document.getElementById("birthday").value
+        if (fname === '') {
+            document.getElementById("missing-fname").innerHTML = "Invalid fname!"
+        }
+        if (lname === ''){
+            document.getElementById("missing-lname").innerHTML = "Invalid lname!"
+        }
+        if (birthday === '') {
+            document.getElementById("missing-birthday").innerHTML = "Invalid birthday!"
         } 
     }
     function dateDiff() {
