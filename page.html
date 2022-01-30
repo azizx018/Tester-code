@@ -1,55 +1,122 @@
 <!DOCTYPE html>
 <html>
-<body>
+<head>
+    <title>Chiara's Project</title>
     <style>
+        body {
+            background-color:rgb(136, 206, 230);
+            padding: 10px;
+        }
         label {
+            display:block;
+            margin-bottom: 10px;
+            padding: 2px;
+        }
+        input {
             display: block;
+            width: 200px;
+        }
+        button {
+            background-color:rgb(244, 193, 29);
+            padding: 8px; 
+            border-radius:5px;
         }
     </style>
+</head>
+<body>
 
 <div>
-    <form onsubmit="return false">
+    <form onsubmit="validate(event)">
         <label>
             UserID:
-            <input type="text" id ="uid" name="uid" required minlength="8" required maxlength="12">
+            <input type="text" id ="uid" name="uid" required minlength="8" maxlength="12">
         </label>
         
         <label>
             First Name:
-            <input type="text" id= "fname" name="fname">
+            <input type="text" id= "fname" name="fname" required>
         </label>
         
         <label>
             Last Name:
-            <input type="text" id=lname" name="lname">
+            <input type="text" id="lname" name="lname" required>
         </label>
         
         <label>
             Birthday:
-            <input type="date" id="birthday" name="birthday" placeholder="mm/dd/yyyy">
+            <input type="date" id="birthday" name="birthday" placeholder="mm/dd/yyyy" required>
         </label>
-        <button onclick="validate()">Accept</button>
+        <button>Accept</button>
     </form>
+</div>
+<div id="chart">
+    
+</div>
+<div>
+    <p id="results"></p>
+    <p id="age"></p>
 </div>
 
 <script>
-        //const fname = document.getElementById("fname").value
-        //const lname = document.getElementById("lname").value
-        //const birthday = document.getElementById("birthday").value
+       
+    let _daysAlive = 0
+    const ageDiv = document.getElementById("age")
 
-        function validate() {
-            
-            verifyUserID()
-            
-        }
+    function validate(event) {
+        event.preventDefault()
+        ageDiv.innerHTML = ''
+        verifyUserID()
+        _daysAlive = dateDiff()
+        printResults()
+    }
 
-        function verifyUserID() {
-            const uid = document.getElementById("uid").value.trim()
-            
-            for(let x of uid) {
-                console.log(x)
+    function verifyUserID() {
+        let hasNumber = false
+        let hasUpperCase = false
+        let hasLowerCase = false
+
+        const uid = document.getElementById("uid").value
+        for(let x of uid) {
+            if (!isNaN(x)) {
+                hasNumber = true 
             }
-        };
+            else if (x === x.toUpperCase()) {
+                hasUpperCase = true
+            } 
+            else if (x === x.toLowerCase()) {
+                hasLowerCase = true
+            }
+        }
+        if (hasNumber === false || hasLowerCase === false || hasUpperCase === false){
+            alert("Invalid UserID! You must use an Uppercase, lowercase and a number for your UserID")
+        } 
+    }
+    function dateDiff() {
+        const today = new Date()
+        const birthday = document.getElementById("birthday").value
+        const dateParts = birthday.split("-")
+        const birthdate = new Date(parseInt(dateParts[0], 10),
+                                  parseInt(dateParts[1], 10) - 1,
+                                  parseInt(dateParts[2], 10))
+        const millisecondsInDay = 1000 * 60 * 60 * 24
+        const daysAlive = (Math.round((today-birthdate)/millisecondsInDay))
+        return daysAlive
+    }
+    function printResults() {
+        const fname = document.getElementById("fname").value
+        const lname = document.getElementById("lname").value        
+        document.getElementById("results").innerHTML =
+            `${fname} ${lname}, you have been breathing for ${_daysAlive} days!`
+        if (_daysAlive < (365*18)){
+            ageDiv.innerHTML = "You are probably not old enough to take this class!"
+        }   
+    }
+    let str = ""
+    for (let i = 0; i < 21; i++){
+        str = str.padStart(i,"x")
+        console.log(str)
+        document.write(str.padStart(i,"x") + "<br>")
+    }
     
     // and validate inputs here using if statements
     // and document.getElementById().innerHTML to display results
