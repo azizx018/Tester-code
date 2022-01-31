@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chiara's Project</title>
+    <title>My Project</title>
     <style>
         body {
             background-color:rgb(26, 26, 102);
@@ -37,70 +37,70 @@
 <body>
 
 <div>
-    <form onsubmit="validate(event)">
+    <form onsubmit='validate(event)'>
         <label>
             UserID:
-            <input type="text" id ="uid" name="uid" minlength="8" maxlength="12">
-            <h5 id="uid-invalid">Invalid UserID</h5>
-            <h5 id="uid-no-uppercase">You need at least 1 upper case letter.</h5>
-            <h5 id="uid-no-lowercase">You need at least 1lower case letter.</h5>
-            <h5 id="uid-no-number">You need at least 1 number.</h5>
+            <input type='text' id ='uid' name='uid' minlength='8' maxlength='12'>
+            <h5 id='uid-invalid'>Invalid UserID</h5>
+            <h5 id='uid-no-uppercase'>You need at least 1 upper case letter.</h5>
+            <h5 id='uid-no-lowercase'>You need at least 1 lower case letter.</h5>
+            <h5 id='uid-no-number'>You need at least 1 number.</h5>
         </label>
         
         <label>
             First Name:
-            <input type="text" id= "fname" name="fname">
-            <h5 id="fname-invalid">Invalid fname</h5>
+            <input type='text' id= 'fname' name='fname'>
+            <h5 id='fname-invalid'>Invalid fname</h5>
         </label>
         
         <label>
             Last Name:
-            <input type="text" id="lname" name="lname">
-            <h5 id="lname-invalid">Invalid lname</h5>
+            <input type='text' id='lname' name='lname'>
+            <h5 id='lname-invalid'>Invalid lname</h5>
         </label>
         
         <label>
             Birthday:
-            <input type="date" id="birthday" name="birthday" placeholder="mm/dd/yyyy">
-            <h5 id="birthday-invalid">Invalid birthday</h5>
+            <input type='date' id='birthday' name='birthday' placeholder='mm/dd/yyyy'>
+            <h5 id='birthday-invalid'>Invalid birthday</h5>
         </label>
+
         <button>Accept</button>
     </form>
 </div>
-<div id="chart">
-    
-</div>
 <div>
-    <p id="results"></p>
-    <p id="age"></p>
+    <p id='results'></p>
+    <p id='age'></p>
 </div>
 
 <script>
-    const ageDiv = document.getElementById("age")
-    const fnameInput = document.getElementById("fname")
-    const lnameInput = document.getElementById("lname")
-    const birthdayInput = document.getElementById("birthday")
-    const resultsDiv = document.getElementById("results")
+    const ageDiv = document.getElementById('age')
+    const fnameInput = document.getElementById('fname')
+    const lnameInput = document.getElementById('lname')
+    const birthdayInput = document.getElementById('birthday')
+    const resultsDiv = document.getElementById('results')
 
     function validate(event) {
         event.preventDefault()
         ageDiv.innerHTML = ''
         resultsDiv.innerHTML = ''
-        const uidValid = verifyUserID()
-        const nameAndBirthdayValid = verifyNameAndBirthday()
-        if (nameAndBirthdayValid) {
-            const birthday = document.getElementById("birthday").value
-            const dateParts = birthday.split("-")
+        const isUserIdValid = verifyUserID()
+        const isNameAndBirthdayValid = verifyNameAndBirthday()
+        if (isNameAndBirthdayValid && isUserIdValid) {
+            const birthday = birthdayInput.value
+            // format from input: yyyy-mm-dd
+            const dateParts = birthday.split('-')
+            // Date(year, month, day) - all integers
             const birthdate = new Date(parseInt(dateParts[0], 10),
-                                    parseInt(dateParts[1], 10) - 1,
+                                    parseInt(dateParts[1], 10) - 1, // Jan is 0
                                     parseInt(dateParts[2], 10))
-            const daysAlive = dateDiff(birthdate)
-            printResults(daysAlive)
+            const daysBreathing = dateDiff(birthdate)
+            printResults(daysBreathing)
         }
     }
 
     function verifyUserID() {
-        const uid = document.getElementById("uid").value
+        const uid = document.getElementById('uid').value
         let hasNumber = false
         let hasUpperCase = false
         let hasLowerCase = false
@@ -109,40 +109,48 @@
             if (!isNaN(x)) { // parseInt() ignored 0
                 hasNumber = true 
             }
-            else if (x === x.toUpperCase()) {
+            else if (x !== x.toLowerCase()) {
                 hasUpperCase = true
             } 
-            else if (x === x.toLowerCase()) {
+            else if (x !== x.toUpperCase()) {
                 hasLowerCase = true
             }
         }
+        
         const userIdValid = hasUpperCase && hasLowerCase && hasNumber
-        elementDisplay("uid-no-uppercase", hasUpperCase)
-        elementDisplay("uid-no-lowercase", hasLowerCase)
-        elementDisplay("uid-no-number", hasNumber)
-        elementDisplay("uid-invalid", userIdValid)
+        elementHide('uid-no-uppercase', hasUpperCase)
+        elementHide('uid-no-lowercase', hasLowerCase)
+        elementHide('uid-no-number', hasNumber)
+        elementHide('uid-invalid', userIdValid)
         return userIdValid
     }
 
-    function elementDisplay(id, displayNone) {
-        document.getElementById(id).style.display = displayNone ? "none" : "block"
+    function elementHide(id, hide) {
+        let display = ''
+        if (hide) {
+            display = 'none'
+        } else {
+            display = 'block'
+        }
+        document.getElementById(id).style.display = display
     }
 
     function verifyNameAndBirthday() {
         const fnameValid = fnameInput.value !== ''
         const lnameValid = lnameInput.value !== ''
         const birthdayValid = birthdayInput.value !== ''
-        elementDisplay("fname-invalid", fnameValid)
-        elementDisplay("lname-invalid", lnameValid)
-        elementDisplay("birthday-invalid", birthdayValid)
+        elementHide('fname-invalid', fnameValid)
+        elementHide('lname-invalid', lnameValid)
+        elementHide('birthday-invalid', birthdayValid)
         const nameAndBirthdayValid = fnameValid && lnameValid && birthdayValid
         return nameAndBirthdayValid
     }
 
     function dateDiff(birthdate) {
         const today = new Date()
+        const millisecondDifference = today - birthdate
         const millisecondsInDay = 1000 * 60 * 60 * 24
-        const daysAlive = (Math.round((today - birthdate) / millisecondsInDay))
+        const daysAlive = Math.round(millisecondDifference / millisecondsInDay)
         return daysAlive
     }
 
@@ -151,15 +159,15 @@
         const lname = lnameInput.value        
         resultsDiv.innerHTML =
             `${fname} ${lname} you have been breathing for ${daysAlive} days!`
-        if (daysAlive < (365*18)){
-            ageDiv.innerHTML = "You are probably not old enough to take this class!"
+        if (daysAlive < (365 * 18)) {
+            ageDiv.innerHTML = 'You are probably not old enough to take this class!'
         }   
     }
 
-    let str = ""
-    for (let i = 0; i < 21; i++){
-        str = str.padStart(i,"x")
-        document.write(str + "<br>")
+    for (let i = 1; i < 21; i++){
+        let str = ''
+        str = str.padStart(i,'x')
+        document.write(str + '<br>')
     }
         
 </script>
