@@ -80,43 +80,54 @@
     const birthdayInput = document.getElementById('birthday')
     const resultsDiv = document.getElementById('results')
 
+    //if any function throws an exception need to test the errors / exceptions.
+    //DOM stuff here - don't need to test this all functions in this 1 are tested
     function validate(event) {
         event.preventDefault()
         ageDiv.innerHTML = ''
         resultsDiv.innerHTML = ''
-        const isUserIdValid = verifyUserID()
-        const isNameAndBirthdayValid = verifyNameAndBirthday()
-        if (isNameAndBirthdayValid && isUserIdValid) {
+
+        const isUserIdValid = verifyUserID(document.getElementById('uid').value)
+        const fnameValid = isStringNotEmpty(fnameInput.value)
+        const lnameValid = isStringNotEmpty(lnameInput.value)
+        const birthdayValid = isStringNotEmpty(birthdayInput.value)
+
+        elementHide('fname-invalid', fnameValid)
+        elementHide('lname-invalid', lnameValid)
+        elementHide('birthday-invalid', birthdayValid)
+
+        if (fnameValid && lnameValid && birthdayValid && isUserIdValid) {
             const birthday = birthdayInput.value
             // format from input: yyyy-mm-dd
             const dateParts = birthday.split('-')
             // Date(year, month, day) - all integers
             const birthdate = new Date(parseInt(dateParts[0], 10),
-                                    parseInt(dateParts[1], 10) - 1, // Jan is 0
-                                    parseInt(dateParts[2], 10))
+                parseInt(dateParts[1], 10) - 1, // Jan is 0
+                parseInt(dateParts[2], 10))
             const daysBreathing = dateDiff(birthdate)
-            printResults(daysBreathing)
+            resultsDiv.innerHTML = `${fnameInput.value} ${lnameInput.value} you have been breathing for ${daysBreathing} days!`
+            ageDiv.innerHTML = oldEnoughString(daysBreathing)
+
         }
     }
 
-    function verifyUserID() {
-        const uid = document.getElementById('uid').value
+    function verifyUserID(uid) {
         let hasNumber = false
         let hasUpperCase = false
         let hasLowerCase = false
-        
+
         for(let x of uid) {
             if (!isNaN(x)) { // parseInt() ignored 0
-                hasNumber = true 
+                hasNumber = true
             }
             else if (x !== x.toLowerCase()) {
                 hasUpperCase = true
-            } 
+            }
             else if (x !== x.toUpperCase()) {
                 hasLowerCase = true
             }
         }
-        
+
         const userIdValid = hasUpperCase && hasLowerCase && hasNumber
         elementHide('uid-no-uppercase', hasUpperCase)
         elementHide('uid-no-lowercase', hasLowerCase)
@@ -125,6 +136,32 @@
         return userIdValid
     }
 
+    function test_verifyUserID() {
+        const ThorAlmighty23 = verifyUserID("ThorAlmighty23")
+        console.log(ThorAlmighty23 ? "User has all req met!passed" : "failed")
+
+        //console.log(verifyUserID("ThorAlmighty23") === true ? "passed" : "failed")
+
+        //console.log(verifyUserID("ThorAlmighty23") ? "passed" : "failed")
+
+        // if (verifyUserID("ThorAlmighty23") === true)
+        //     console.log("passed")
+        // else
+        //     console.log("failed")
+        const TTUT123GRR = verifyUserID("TTUT123GRR")
+        console.log(TTUT123GRR === false ? "User is missing a lower case:passed": "failed")
+        const HelloWorld = verifyUserID("HelloWorld")
+        console.log(HelloWorld === false ? "User is missing numbers! passed!":"User is missing numbers! failed")
+        const helloworld = verifyUserID("helloworld")
+        console.log(helloworld === false  ? "User is missing numbers & CAPS! passed!":"User is missing numbers & CAPS! failed")
+        const GOAT2021 = verifyUserID("GOAT2021")
+        console.log(GOAT2021 === false  ? "User is missing numbers & lowercase! passed!":"User is missing numbers & lowercase! failed")
+        const blank = verifyUserID(" ")
+        console.log(blank === false  ? "UserId can't be blank! passed!":"UserID is blank! failed")
+    }
+    test_verifyUserID()
+
+    //will not test DOM only
     function elementHide(id, hide) {
         let display = ''
         if (hide) {
@@ -135,16 +172,19 @@
         document.getElementById(id).style.display = display
     }
 
-    function verifyNameAndBirthday() {
-        const fnameValid = fnameInput.value !== ''
-        const lnameValid = lnameInput.value !== ''
-        const birthdayValid = birthdayInput.value !== ''
-        elementHide('fname-invalid', fnameValid)
-        elementHide('lname-invalid', lnameValid)
-        elementHide('birthday-invalid', birthdayValid)
-        const nameAndBirthdayValid = fnameValid && lnameValid && birthdayValid
-        return nameAndBirthdayValid
+    function isStringNotEmpty(str){
+        return str.trim() !== ''
     }
+
+    function test_isStringNotEmpty() {
+        const result = isStringNotEmpty('Hello')
+        if (result !== '')
+            console.log("test_isStringNotEmpty:Passed")
+        else
+            console.error("test_isStringNotEmpty")
+    }
+    test_isStringNotEmpty()
+
 
     function dateDiff(birthdate) {
         const today = new Date()
@@ -154,22 +194,79 @@
         return daysAlive
     }
 
-    function printResults(daysAlive) {
-        const fname = fnameInput.value
-        const lname = lnameInput.value        
-        resultsDiv.innerHTML =
-            `${fname} ${lname} you have been breathing for ${daysAlive} days!`
+    function test_dateDiff() {
+        let daysLiving = dateDiff(new Date(2006, 11,12))
+        if (daysLiving > 5475)
+            console.log("DateDiff test: Passed")
+        else
+            console.error("DateDiff test: failed")
+        daysLiving = dateDiff(new Date(2021,4,14))
+        console.log(daysLiving)
+        if(daysLiving < 365)
+            console.log("1 day old:passed")
+        else
+            console.error("1 day old:failed")
+
+    }
+    test_dateDiff()
+
+
+    function oldEnoughString(daysAlive) {
         if (daysAlive < (365 * 18)) {
-            ageDiv.innerHTML = 'You are probably not old enough to take this class!'
-        }   
+            return 'You are probably not old enough to take this class!'
+        } else{
+            return ''
+        }
+    }
+    function test_oldEnoughString() {
+        let age  = oldEnoughString(365)
+        if (age === 'You are probably not old enough to take this class!' )
+            console.log("test_oldEnoughString: passed")
+        else
+            console.error("test_oldEnoughString: failed")
+        age = oldEnoughString(8952)
+        if (age === '')
+            console.log("over age:passed")
+        else
+            console.error("over age:failed")
+    }
+    test_oldEnoughString()
+
+    //this is not testable - DOM elements
+    function showXOnScreen() {
+        document.write(printX(20))
     }
 
-    for (let i = 1; i < 21; i++){
+    function printX(lines) {
         let str = ''
-        str = str.padStart(i,'x')
-        document.write(str + '<br>')
+        let returnString = ''
+        for (let i = 1; i < lines + 1; i++){
+            str = str.padStart(i,'x')
+            returnString += str + "<br>"
+        }
+        return returnString
     }
-        
+
+    showXOnScreen()
+
+    function test_printX() {
+        const str2 = printX(2);
+        const isStr2Valid = str2
+        if(isStr2Valid === 'x<br>xx<br>')
+            console.log("test_print of X :passed")
+        else
+            console.error("X:failed")
+
+        const strNegative = printX(-3)
+        const isStrNegativeValid = strNegative
+        if (isStrNegativeValid === '')
+            console.log("negative x:passed")
+        else
+            console.error("negativeX:failed")
+    }
+    test_printX()
+
+
 </script>
 
 </body>
